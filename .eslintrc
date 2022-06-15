@@ -1,0 +1,66 @@
+{
+    "extends": [
+        "react-app",
+        "airbnb"
+    ],
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "paths": ["src", "node_modules"]
+            },
+            "webpack": {
+                "config": {
+                    "resolve": {
+                        "modules": ["src", "node_modules"]
+                    }
+                }
+            }
+        }
+    },
+    "rules": {
+        "class-methods-use-this": "off",
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.{stories,story}.{js,jsx}"]}],
+        "import/no-named-as-default": 0,
+        "import/newline-after-import": ["error", { "count": 2 }],
+        "import/prefer-default-export": "off",
+        "jsx-a11y/click-events-have-key-events": 0,
+        "jsx-a11y/label-has-associated-control": 0,
+        "jsx-a11y/no-noninteractive-element-interactions": 0,
+        "jsx-a11y/no-static-element-interactions": 0,
+        "no-multiple-empty-lines": ["error", { "max": 2 }],
+        "linebreak-style": ["error", "unix"],
+        "max-len": [2, 120],
+        "no-console": 0,
+        "no-nested-ternary": 0,
+        "no-param-reassign": ["error", { "props": false }],
+        "no-return-assign": 0,
+        "no-underscore-dangle": 0,
+        "no-void": 0,
+        "no-plusplus": 0,
+        "no-restricted-syntax": [
+            "error",
+            "LabeledStatement",
+            "WithStatement"
+        ],
+        "prefer-destructuring": ["error", {
+            "VariableDeclarator": {
+                "array": false,
+                "object": true
+            },
+            "AssignmentExpression": {
+                "array": false,
+                "object": true
+            }
+        }, {
+            "enforceForRenamedProperties": false
+        }],
+        "react/jsx-props-no-spreading": "off",
+        "react/no-array-index-key": "off",
+        "react/no-did-mount-set-state": "off",
+        "react/no-did-update-set-state": "off",
+        "react/prop-types": 0,
+        "react/require-default-props": "off",
+        "react/state-in-constructor": 0,
+        "react/static-property-placement": 0
+    }
+}
