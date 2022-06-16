@@ -1,29 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import { publicRoutes } from './routes/routes';
+
+import './App.scss';
 
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit
-          {' '}
-          <code>src/App.js</code>
-          {' '}
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          {publicRoutes.map((route) => (
+            <Route
+              path={route.path}
+              element={route.element}
+              exact={route.exact}
+              key={route.path}
+            />
+          ))}
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
