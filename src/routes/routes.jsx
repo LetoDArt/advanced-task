@@ -1,17 +1,23 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import MainPage from '../pages/MainPage';
+import Products from '../pages/Products/Products';
+import Warehouses from '../pages/Warehouses/Warehouses';
 
 
 export const publicRoutes = [
   {
-    path: '/home',
-    element: <MainPage />,
+    path: '/products',
+    element: <Products />,
+    exact: true,
+  },
+  {
+    path: '/warehouses',
+    element: <Warehouses />,
     exact: true,
   },
   {
     path: '*',
-    element: <Navigate to="/home" />,
+    element: <Navigate to="/products" />,
     exact: true,
   },
 ];
