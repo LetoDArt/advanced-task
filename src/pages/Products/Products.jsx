@@ -8,7 +8,7 @@ const Products = () => {
 
   return (
     <NavigationSystem>
-      <div>123</div>
+      test
     </NavigationSystem>
   );
 };
