@@ -1,0 +1,52 @@
+.top-navigation {
+  min-height: 65px;
+
+  .container-fluid {
+
+    .navbar-brand {
+      cursor: default;
+    }
+
+    .navbar-collapse {
+
+      .navbar-nav {
+
+        .nav-item {
+
+          .nav-link {
+            position: relative;
+            padding-bottom: 10px;
+            cursor: pointer;
+            border-radius: 10px;
+          }
+
+          .nav-link:hover {
+            background-color: rgba(255,255,255, 0.1);
+          }
+
+          .nav-link.active {
+            padding-bottom: 8px;
+          }
+
+          .nav-link.active:after {
+            content: '';
+            position: absolute;
+            display: block;
+            height: 2px;
+            width: calc(100% - 16px);
+            background-color: #ffffff;
+            border-radius: 3px 3px 0 0;
+
+            @media screen and (max-width: 991px) {
+              display: inline;
+              height: calc(100% - 16px);
+              width: 2px;
+              border-radius: 3px 0 0 3px;
+              right: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
