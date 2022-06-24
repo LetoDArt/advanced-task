@@ -9,13 +9,13 @@ import TableRows from '../TableRows/TableRows';
 import './TableItself.scss';
 
 
-const TableItself = ({ rows }) => {
+const TableItself = ({ rows, deleteFunc }) => {
   console.log('ff');
   return (
     <TableContainer className="table-itself-container" component={Paper}>
       <Table sx={{ minWidth: 800 }} aria-label="simple table">
         <TableHeader />
-        <TableRows rows={rows} />
+        <TableRows rows={rows} deleteFunc={deleteFunc} />
       </Table>
     </TableContainer>
   );
