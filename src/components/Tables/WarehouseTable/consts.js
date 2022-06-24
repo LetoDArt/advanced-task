@@ -1,0 +1,1 @@
+export const WAREHOUSE_LIST_KEY = 'WAREHOUSE_LIST_KEY';

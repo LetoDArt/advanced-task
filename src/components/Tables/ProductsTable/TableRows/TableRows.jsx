@@ -6,10 +6,10 @@ import OneRow from './OneRow/OneRow';
 import './TableRows.scss';
 
 
-const TableRows = ({ rows }) => (
+const TableRows = ({ rows, deleteFunc }) => (
   <TableBody>
-    {rows.map((row) => (
-      <OneRow key={row.id} row={row} />
+    {rows && rows.map((row) => (
+      <OneRow key={row.id} row={row} deleteFunc={deleteFunc} />
     ))}
   </TableBody>
 );
