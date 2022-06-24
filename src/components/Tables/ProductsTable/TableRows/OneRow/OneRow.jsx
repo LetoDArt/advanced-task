@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import './OneRow.scss';
 
 
-const OneRow = ({ row }) => {
+const OneRow = ({ row, deleteFunc }) => {
   const [showButtons, setShowButtons] = useState(false);
 
   return (
@@ -19,19 +19,24 @@ const OneRow = ({ row }) => {
       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
     >
       <TableCell component="th" scope="row">
-        {row.name}
+        {row?.name ?? ''}
       </TableCell>
-      <TableCell align="right">{row.calories}</TableCell>
-      <TableCell align="right">{row.fat}</TableCell>
-      <TableCell align="right">{row.carbs}</TableCell>
-      <TableCell align="right">{row.protein}</TableCell>
-      <TableCell align="right">{row.protein}</TableCell>
+      <TableCell align="right">{row?.num ?? ''}</TableCell>
+      <TableCell align="right">{row?.weight ?? ''}</TableCell>
+      <TableCell align="right">{row?.height ?? ''}</TableCell>
+      <TableCell align="right">{row?.width ?? ''}</TableCell>
+      <TableCell align="right">{row?.length ?? ''}</TableCell>
+      <TableCell align="right">{row?.color ?? ''}</TableCell>
       <TableCell className="button-group" align="right">
         <div className={`button-cell ${showButtons && 'shown'}`}>
           <MDBBtn outline color="success">
             <MDBIcon size="2x" fas icon="edit" />
           </MDBBtn>
-          <MDBBtn outline color="danger">
+          <MDBBtn
+            onClick={() => deleteFunc(row)}
+            outline
+            color="danger"
+          >
             <MDBIcon size="2x" fas icon="trash-alt" />
           </MDBBtn>
         </div>

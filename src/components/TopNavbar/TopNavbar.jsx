@@ -29,7 +29,6 @@ const TopNavbar = ({ links }) => {
 
   const setChosen = (id, link) => {
     dispatch(navigationActions.setChosenOption(id));
-    window.sessionStorage.setItem(CHOSEN_NAVIGATION_OPTION, id);
     navigate(link);
   };
 

@@ -1,0 +1,1 @@
+export const PRODUCT_LIST_KEY = 'PRODUCT_LIST_KEY';
