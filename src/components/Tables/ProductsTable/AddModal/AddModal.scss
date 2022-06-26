@@ -1,0 +1,57 @@
+@import "mdb-react-ui-kit/dist/scss/mdb.free";
+.product-addition-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-row-gap: 24px;
+
+  .product-addition {
+    display: grid;
+    grid-template-rows: auto;
+    grid-row-gap: 12px;
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 24px;
+    }
+  }
+
+  .warning-row {
+    color: $danger;
+  }
+
+  .warehouse-distribution {
+    display: grid;
+    grid-template-rows: 30px auto;
+    grid-row-gap: 12px;
+
+    .warehouse-distribute-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 24px;
+
+
+      .MuiAutocomplete-popper {
+
+        .MuiPaper-root {
+          background-color: #F5F5F5;
+        }
+      }
+    }
+
+    .warehouse-distribution-list {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-row-gap: 12px;
+      max-height: 204px;
+      overflow: auto;
+      padding: 5px 0;
+    }
+
+    .warehouse-distribute-row.header-row {
+      border-bottom: 2px solid #000;
+    }
+  }
+}

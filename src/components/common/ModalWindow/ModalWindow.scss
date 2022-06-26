@@ -1,0 +1,50 @@
+@import "mdb-react-ui-kit/dist/scss/mdb.free";
+.MuiModal-root {
+
+  .MuiBox-root {
+    padding: 0;
+
+    .modal-container {
+      height: 100%;
+      width: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      border-radius: 15px;
+
+      .modal-header-container {
+        height: 100px;
+        background-color: #262626;
+        border-radius: 15px 15px 0 0;
+        padding: 24px 12px 24px 24px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .button-container {
+          display: grid;
+          grid-template-columns: auto auto;
+          grid-column-gap: 12px;
+
+          .modal-option-btn {
+            background-color: transparent;
+            box-shadow: none;
+          }
+
+          .modal-option-btn.apply-submit {
+            color: $success;
+          }
+
+          .modal-option-btn.close-cancel {
+            color: $danger;
+          }
+        }
+
+        .modal-content-container {
+          padding: 24px;
+        }
+
+
+      }
+    }
+  }
+}

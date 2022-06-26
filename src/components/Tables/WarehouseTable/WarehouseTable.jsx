@@ -6,7 +6,7 @@ import TableItself from './TableItself/TableItself';
 import { WAREHOUSE_LIST_KEY } from './consts';
 import Actions from '../tableActions';
 
-import './WarehouseTable.scss';
+import '../TableStyles/TableStyles.scss';
 
 
 const actions = new Actions(WAREHOUSE_LIST_KEY);

@@ -1,4 +1,4 @@
-class Actions {
+export default class Actions {
   constructor(key) {
     this.storageKey = key;
   }
@@ -17,9 +17,9 @@ class Actions {
   }
 
   addOptionToDataList = (item) => {
-    const products = this.getDataListFromLocalStorage().push(item);
+    const products = this.getDataListFromLocalStorage();
+    products.push(item);
     this.setDataListInLocalStorage(products);
   };
 }
 
-export default Actions;
