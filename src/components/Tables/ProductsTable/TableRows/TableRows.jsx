@@ -3,7 +3,7 @@ import TableBody from '@mui/material/TableBody';
 
 import OneRow from './OneRow/OneRow';
 
-import './TableRows.scss';
+import '../../TableStyles/TableRows/TableRows.scss';
 
 
 const TableRows = ({ rows, deleteFunc }) => (

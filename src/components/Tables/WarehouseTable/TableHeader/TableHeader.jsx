@@ -4,7 +4,7 @@ import TableRow from '@mui/material/TableRow';
 
 import TableCell from '@mui/material/TableCell';
 
-import './TableHeader.scss';
+import '../../TableStyles/TableHeader/TableHeader.scss';
 
 
 const TableHeader = () => {

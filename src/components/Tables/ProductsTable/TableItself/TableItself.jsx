@@ -6,14 +6,14 @@ import Paper from '@mui/material/Paper';
 import TableHeader from '../TableHeader/TableHeader';
 import TableRows from '../TableRows/TableRows';
 
-import './TableItself.scss';
+import '../../TableStyles/TableItself/TableItself.scss';
 
 
 const TableItself = ({ rows, deleteFunc }) => {
   console.log('ff');
   return (
     <TableContainer className="table-itself-container" component={Paper}>
-      <Table sx={{ minWidth: 800 }} aria-label="simple table">
+      <Table stickyHeader sx={{ minWidth: 800 }} aria-label="simple table">
         <TableHeader />
         <TableRows rows={rows} deleteFunc={deleteFunc} />
       </Table>
