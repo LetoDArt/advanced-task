@@ -4,7 +4,7 @@ import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
 import TableCell from '@mui/material/TableCell';
 
-import './OneRow.scss';
+import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
 
 const OneRow = ({ row, deleteFunc }) => {

@@ -4,7 +4,7 @@ import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
 import TableCell from '@mui/material/TableCell';
 
-import './OneRow.scss';
+import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
 
 const OneRow = ({ row, deleteFunc }) => {
@@ -22,6 +22,8 @@ const OneRow = ({ row, deleteFunc }) => {
         {row?.name ?? ''}
       </TableCell>
       <TableCell align="right">{row?.num ?? ''}</TableCell>
+      <TableCell align="right">{row?.quantity ?? ''}</TableCell>
+      <TableCell align="right">{row?.nonUsedQuantity ?? ''}</TableCell>
       <TableCell align="right">{row?.weight ?? ''}</TableCell>
       <TableCell align="right">{row?.height ?? ''}</TableCell>
       <TableCell align="right">{row?.width ?? ''}</TableCell>
