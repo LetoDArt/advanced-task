@@ -1,6 +1,7 @@
 export default class Relations {
   constructor(key) {
     this.storageKey = key;
+    // this.#init();
   }
 
   getRelationListFromLocalStorage() {

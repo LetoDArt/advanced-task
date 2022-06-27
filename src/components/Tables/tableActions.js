@@ -21,5 +21,13 @@ export default class Actions {
     products.push(item);
     this.setDataListInLocalStorage(products);
   };
+
+  editItemOfList(item) {
+    const products = this.getDataListFromLocalStorage();
+    products.forEach((one, ind) => {
+      if (one.id === item.id) products[ind] = { ...item, id: one.id };
+    });
+    this.setDataListInLocalStorage(products);
+  }
 }
 
