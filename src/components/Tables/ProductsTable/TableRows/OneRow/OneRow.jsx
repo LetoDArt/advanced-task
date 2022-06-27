@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
 import TableCell from '@mui/material/TableCell';
 
 import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
+import Relations from '../../../TableRelations';
+import { PRODUCT_WAREHOUSE_QUANTITY } from '../../consts';
 
 
-const OneRow = ({ row, deleteFunc }) => {
+const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
+
+const OneRow = ({ row, deleteFunc, editItem }) => {
   const [showButtons, setShowButtons] = useState(false);
+  const [nonUsedQuantity, setNonUsedQuantity] = useState(0);
+
+  useEffect(() => {
+    const currentStore = relations.getRelationListFromLocalStorage().filter((item) => item.prodId === row.id);
+    const used = currentStore.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
+    setNonUsedQuantity(row?.quantity ? row.quantity - used : 0);
+  }, []);
 
   return (
     <TableRow
@@ -23,7 +34,7 @@ const OneRow = ({ row, deleteFunc }) => {
       </TableCell>
       <TableCell align="right">{row?.num ?? ''}</TableCell>
       <TableCell align="right">{row?.quantity ?? ''}</TableCell>
-      <TableCell align="right">{row?.nonUsedQuantity ?? ''}</TableCell>
+      <TableCell align="right">{nonUsedQuantity}</TableCell>
       <TableCell align="right">{row?.weight ?? ''}</TableCell>
       <TableCell align="right">{row?.height ?? ''}</TableCell>
       <TableCell align="right">{row?.width ?? ''}</TableCell>
@@ -31,7 +42,11 @@ const OneRow = ({ row, deleteFunc }) => {
       <TableCell align="right">{row?.color ?? ''}</TableCell>
       <TableCell className="button-group" align="right">
         <div className={`button-cell ${showButtons && 'shown'}`}>
-          <MDBBtn outline color="success">
+          <MDBBtn
+            onClick={() => editItem(true, row)}
+            outline
+            color="success"
+          >
             <MDBIcon size="2x" fas icon="edit" />
           </MDBBtn>
           <MDBBtn

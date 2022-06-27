@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TextField } from '@mui/material';
 
-import ModalWindow from '../../../common/ModalWindow/ModalWindow';
-import WarehouseDistribution from './WarehouseDistribution/WarehouseDistribution';
+import ModalWindow from '../../common/ModalWindow/ModalWindow';
+import Distribution from './Distribution/Distribution';
 
-import Relations from '../../TableRelations';
+import Relations from '../TableRelations';
 
-import './AddModal.scss';
+import { PRODUCT_WAREHOUSE_QUANTITY } from '../ProductsTable/consts';
+
+import './AddEditModal.scss';
 
 
-const relations = new Relations('PRODUCT_WAREHOUSE_QUANTITY');
+const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
-const AddModal = ({ open, handleClose, applyFunc }) => {
+const AddEditModal = ({
+  editing,
+  initialValues,
+  open,
+  handleClose,
+  applyFunc,
+  listQuantities,
+  setQuantities,
+  warehouses,
+}) => {
   const [nameVal, setNameVal] = useState('');
   const [numberVal, setNumberVal] = useState('');
   const [weightVal, setWeightVal] = useState('');
@@ -21,56 +32,102 @@ const AddModal = ({ open, handleClose, applyFunc }) => {
   const [quantityVal, setQuantityVal] = useState('');
   const [colorVal, setColorVal] = useState('');
   const [error, setError] = useState('');
-  const listQuantities = [];
 
   const getQuantity = (id, value) => {
-    if (listQuantities.some((item) => item.storeId === id)) {
-      listQuantities.forEach((item) => {
+    const list = [...listQuantities];
+    if (list.some((item) => item.storeId === id)) {
+      list.forEach((item) => {
         if (item.storeId === id) item.quantity = value;
       });
     } else {
-      listQuantities.push({
+      list.push({
         storeId: id,
         quantity: value,
       });
     }
+    setQuantities(list);
+  };
+  const clearFields = () => {
+    setNameVal('');
+    setNumberVal('');
+    setWeightVal('');
+    setWidthVal('');
+    setHeightVal('');
+    setLengthVal('');
+    setQuantityVal('');
+    setColorVal('');
+    setError('');
   };
 
+  const closeWindow = useCallback(() => {
+    clearFields();
+    handleClose();
+  }, []);
+
   useEffect(() => {
-    if (!open) {
-      setNameVal('');
-      setNumberVal('');
-      setWeightVal('');
-      setWidthVal('');
-      setHeightVal('');
-      setLengthVal('');
-      setColorVal('');
-      setError('');
+    if (editing && initialValues) {
+      setNameVal(initialValues?.name ?? '');
+      setNumberVal(initialValues?.num ?? '');
+      setWeightVal(initialValues?.weight ?? '');
+      setWidthVal(initialValues?.width ?? '');
+      setHeightVal(initialValues?.height ?? '');
+      setLengthVal(initialValues?.length ?? '');
+      setQuantityVal(initialValues?.quantity ?? '');
+      setColorVal(initialValues?.color ?? '');
+    } else {
+      clearFields();
     }
-  }, [open]);
+    if (!open) {
+      clearFields();
+    }
+  }, [initialValues, editing, open]);
+
+  const processApply = (usedQuantity) => {
+    const product = {
+      id: editing ? initialValues?.id : `row ${Date.now()}`,
+      name: nameVal,
+      num: numberVal,
+      weight: weightVal,
+      width: widthVal,
+      height: heightVal,
+      length: lengthVal,
+      color: colorVal,
+      quantity: quantityVal,
+      nonUsedQuantity: quantityVal - usedQuantity,
+    };
+    const existing = relations.getRelationListFromLocalStorage();
+    listQuantities.forEach((item) => {
+      item.prodId = product.id;
+    });
+
+    console.log('editing', editing);
+    if (!editing) {
+      console.log('AddEditModal', [...existing, ...listQuantities]);
+      relations.setRelationListInLocalStorage([...existing, ...listQuantities]);
+    } else {
+      const save = [];
+      let newExisting = [];
+
+      if (listQuantities.length) {
+        listQuantities.forEach((newOnes) => {
+          newExisting = existing
+            .filter((exItem) => !(exItem.prodId === product.id && exItem.storeId === newOnes.storeId));
+          save.push(newOnes);
+        });
+
+        console.log(newExisting, save, 'AddEditModal 166');
+        relations.setRelationListInLocalStorage([...newExisting, ...save]);
+      }
+    }
+    applyFunc(product);
+  };
 
   const addProductApply = () => {
     const usedQuantity = listQuantities.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
-    if (nameVal && numberVal && quantityVal && (quantityVal >= usedQuantity)) {
-      const product = {
-        id: `row ${Date.now()}`,
-        name: nameVal,
-        num: numberVal,
-        weight: weightVal,
-        width: widthVal,
-        height: heightVal,
-        length: lengthVal,
-        color: colorVal,
-        quantity: quantityVal,
-        nonUsedQuantity: quantityVal - usedQuantity,
-      };
-      listQuantities.forEach((item) => {
-        item.prodId = product.id;
-      });
-      const existing = relations.getRelationListFromLocalStorage();
-      relations.setRelationListInLocalStorage([...existing, ...listQuantities]);
-      applyFunc(product);
-      handleClose();
+    console.log(usedQuantity, +quantityVal, listQuantities);
+    if (nameVal && numberVal && quantityVal && (+quantityVal >= usedQuantity)) {
+      processApply(usedQuantity);
+      closeWindow();
     } else if (!nameVal || !numberVal) {
       setError('Name of a product and individual number are required');
     } else if (!quantityVal) {
@@ -83,7 +140,7 @@ const AddModal = ({ open, handleClose, applyFunc }) => {
   return (
     <ModalWindow
       open={open}
-      handleClose={handleClose}
+      handleClose={closeWindow}
       title="Add Product"
       submitBtnFunc={addProductApply}
     >
@@ -151,11 +208,11 @@ const AddModal = ({ open, handleClose, applyFunc }) => {
             />
           </div>
         </div>
-        <WarehouseDistribution getQuantity={getQuantity} />
+        <Distribution warehouses={warehouses} getQuantity={getQuantity} />
         {error && (<div className="warning-row">{error}</div>)}
       </div>
     </ModalWindow>
   );
 };
 
-export default AddModal;
+export default AddEditModal;
