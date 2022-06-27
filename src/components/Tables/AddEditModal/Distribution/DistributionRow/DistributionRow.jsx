@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TextField } from '@mui/material';
 
 
-const DistributionRow = ({ id, warehouse, getValue }) => {
-  console.log('dfsafrweaf', id);
+const DistributionRow = ({
+  id,
+  warehouse,
+  quantity,
+  getValue,
+}) => {
+  const [quant, setQuant] = useState(quantity);
+
+  const changeQuant = (value) => {
+    setQuant(value);
+    getValue(id, value);
+  };
 
   return (
     <div className="warehouse-distribute-row">
@@ -12,13 +22,13 @@ const DistributionRow = ({ id, warehouse, getValue }) => {
         label="Warehouse"
         disabled
         value={warehouse}
-        // onChange={(e) => setQuantityVal(e.target.value)}
       />
       <TextField
         variant="outlined"
         label="Quantity"
         type="number"
-        onChange={(e) => getValue(id, e.target.value)}
+        value={quant}
+        onChange={(e) => changeQuant(e.target.value)}
       />
     </div>
   );

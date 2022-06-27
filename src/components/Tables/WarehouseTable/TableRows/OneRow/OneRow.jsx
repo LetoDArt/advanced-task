@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
 import TableCell from '@mui/material/TableCell';
 
+import { PRODUCT_WAREHOUSE_QUANTITY } from '../../consts';
+
 import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
+import Relations from '../../../TableRelations';
+
+
+const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
 const OneRow = ({ row, deleteFunc }) => {
   const [showButtons, setShowButtons] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    const currentStore = relations.getRelationListFromLocalStorage().filter((item) => item.storeId === row.id);
+    const usedQuantity = currentStore.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
+    setQuantity(usedQuantity);
+  }, []);
 
   return (
     <TableRow
@@ -21,7 +34,7 @@ const OneRow = ({ row, deleteFunc }) => {
       <TableCell component="th" scope="row">
         {row?.name ?? ''}
       </TableCell>
-      <TableCell align="right">{row?.total ?? ''}</TableCell>
+      <TableCell align="right">{quantity ?? ''}</TableCell>
       <TableCell align="right">{row?.address ?? ''}</TableCell>
       <TableCell align="right">{row?.width ?? ''}</TableCell>
       <TableCell align="right">{row?.height ?? ''}</TableCell>
