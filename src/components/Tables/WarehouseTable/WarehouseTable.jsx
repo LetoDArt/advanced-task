@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Card from '../../Card/Card';
 import TableItself from './TableItself/TableItself';
@@ -7,13 +8,15 @@ import AddEditModal from '../AddEditModal/AddEditModal';
 import Actions from '../tableActions';
 import Relations from '../TableRelations';
 
-import { PRODUCT_LIST_KEY, PRODUCT_WAREHOUSE_QUANTITY, WAREHOUSE_LIST_KEY } from '../consts';
+import { tableActions } from '../../../redux/tables/actions';
+import { getProductList, getQuantitiesList, getWarehouseList } from '../../../redux/tables/selectors';
+
+import { PRODUCT_WAREHOUSE_QUANTITY, WAREHOUSE_LIST_KEY } from '../consts';
 
 import '../TableStyles/TableStyles.scss';
 
 
 const actions = new Actions(WAREHOUSE_LIST_KEY);
-const actions2 = new Actions(PRODUCT_LIST_KEY);
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 const initialValues = {
   name: '',
@@ -26,13 +29,19 @@ const initialValues = {
 };
 
 const TableList = () => {
-  const [rows, setRows] = useState([]);
+  const dispatch = useDispatch();
+
   const [values, setValues] = useState(initialValues);
   const [products, setProducts] = useState([]);
   const [warehouseId, setwarehouseId] = useState('');
   const [listQuantities, setListQuantities] = useState([]);
   const [openWarehouseWindow, setOpenWarehouseWindow] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const warehousesList = useSelector(getWarehouseList);
+  const productsList = useSelector(getProductList);
+  const quantitiesList = useSelector(getQuantitiesList);
+
   const dataPattern = {
     first: {
       needed: true, label: 'Name', setterKey: 'name', inputType: 'text', value: values.name,
@@ -71,9 +80,9 @@ const TableList = () => {
 
   const createWarehouseRows = (editing, storeId) => {
     const newDistribution = [];
-    const prods = actions2.getDataListFromLocalStorage();
+    const prods = JSON.parse(JSON.stringify(productsList));
     if (editing) {
-      const relate = relations.getRelationListFromLocalStorage()
+      const relate = [...quantitiesList]
         .filter((item) => item.storeId === storeId);
       prods.forEach((prod) => {
         const relationOfStore = relate.find((rel) => rel.prodId === prod.id);
@@ -112,21 +121,21 @@ const TableList = () => {
 
   const deleteItem = (item) => {
     actions.deleteOneItemFromList(item);
-    setRows(actions.getDataListFromLocalStorage());
-    const clearedRelations = relations.getRelationListFromLocalStorage()
+    dispatch(tableActions.setWarehouseList(actions.getDataListFromLocalStorage()));
+    const clearedRelations = [...quantitiesList]
       .filter((rel) => rel.storeId !== item.id);
     relations.setRelationListInLocalStorage(clearedRelations);
+    dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
   };
 
   const addItem = (item) => {
     actions.addOptionToDataList(item);
-    setRows(actions.getDataListFromLocalStorage());
+    dispatch(tableActions.setWarehouseList(actions.getDataListFromLocalStorage()));
   };
 
   const editItem = (item) => {
-    setRows([]);
     actions.editItemOfList(item);
-    setRows(actions.getDataListFromLocalStorage());
+    dispatch(tableActions.setWarehouseList(actions.getDataListFromLocalStorage()));
   };
 
   const processApply = () => {
@@ -140,7 +149,7 @@ const TableList = () => {
       address: values.address,
       error: values.error,
     };
-    const existing = [...relations.getRelationListFromLocalStorage()];
+    const existing = [...quantitiesList];
     listQuantities.forEach((item) => {
       item.storeId = store.id;
     });
@@ -164,6 +173,7 @@ const TableList = () => {
         relations.setRelationListInLocalStorage([...existing, ...listQuantities]);
       } else relations.setRelationListInLocalStorage([...listQuantities]);
     }
+    dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
     if (isEditing) editItem(store);
     else addItem(store);
   };
@@ -176,11 +186,6 @@ const TableList = () => {
       valueSetter({ error: 'Name of a store and address are required' });
     }
   };
-
-
-  useEffect(() => {
-    setRows(actions.getDataListFromLocalStorage());
-  }, []);
 
   const getQuantity = (id, value) => {
     const list = [...listQuantities];
@@ -206,7 +211,7 @@ const TableList = () => {
         pgTitle="Warehouses"
       >
         <div className="table-body">
-          <TableItself rows={rows} deleteFunc={deleteItem} editItem={forceOpenAddWindow} />
+          <TableItself rows={warehousesList} deleteFunc={deleteItem} editItem={forceOpenAddWindow} />
         </div>
       </Card>
       <AddEditModal
