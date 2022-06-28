@@ -8,6 +8,7 @@ import './AddEditModal.scss';
 
 
 const AddEditModal = ({
+  title,
   values,
   getQuantity,
   warehouses,
@@ -21,8 +22,9 @@ const AddEditModal = ({
   <ModalWindow
     open={open}
     handleClose={handleClose}
-    title="Add Product"
+    title={title}
     submitBtnFunc={applyFunc}
+    customStyle="add-edit-window"
   >
     <div className="product-addition-container">
       <AllFields modalPattern={modalPattern} setter={setter} />
