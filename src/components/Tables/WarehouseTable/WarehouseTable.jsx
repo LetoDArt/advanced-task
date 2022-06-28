@@ -113,6 +113,9 @@ const TableList = () => {
   const deleteItem = (item) => {
     actions.deleteOneItemFromList(item);
     setRows(actions.getDataListFromLocalStorage());
+    const clearedRelations = relations.getRelationListFromLocalStorage()
+      .filter((rel) => rel.storeId !== item.id);
+    relations.setRelationListInLocalStorage(clearedRelations);
   };
 
   const addItem = (item) => {
@@ -207,6 +210,7 @@ const TableList = () => {
         </div>
       </Card>
       <AddEditModal
+        title="Add Store"
         values={values}
         warehouses={products}
         open={openWarehouseWindow}

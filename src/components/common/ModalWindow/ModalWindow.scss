@@ -38,13 +38,33 @@
             color: $danger;
           }
         }
-
-        .modal-content-container {
-          padding: 24px;
-        }
-
-
       }
+
+      .modal-content-container {
+        padding: 24px;
+
+        @media screen and (max-width: 610px){
+          padding: 8px ;
+        }
+      }
+    }
+  }
+
+  .modal-container.add-edit-window {
+    width: 600px;
+    height: 750px;
+
+    @media screen and (max-width: 610px){
+      width: 350px;
+    }
+  }
+
+  .modal-container.warning-deletion-window {
+    width: 600px;
+    height: 400px;
+
+    @media screen and (max-width: 610px){
+      width: 350px;
     }
   }
 }

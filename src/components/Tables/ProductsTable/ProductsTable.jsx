@@ -3,10 +3,16 @@ import React, { useEffect, useState } from 'react';
 import Card from '../../Card/Card';
 import TableItself from './TableItself/TableItself';
 import AddEditModal from '../AddEditModal/AddEditModal';
+import WarningModal from '../WarningModal/WarningModal';
 
 import '../TableStyles/TableStyles.scss';
 
-import { PRODUCT_LIST_KEY, PRODUCT_WAREHOUSE_QUANTITY, WAREHOUSE_LIST_KEY } from '../consts';
+import {
+  PRODUCT_LIST_KEY,
+  PRODUCT_WAREHOUSE_QUANTITY,
+  WAREHOUSE_LIST_KEY,
+  WARNING_ON_DELETION_MESSAGE,
+} from '../consts';
 
 import Actions from '../tableActions';
 import Relations from '../TableRelations';
@@ -38,6 +44,9 @@ const TableList = () => {
   const [listQuantities, setListQuantities] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [values, setValues] = useState(initialValues);
+  const [warn, setWarn] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(true);
+
   const dataPattern = {
     first: {
       needed: true, label: 'Name', setterKey: 'name', inputType: 'text', value: values.name,
@@ -65,6 +74,11 @@ const TableList = () => {
     },
   };
 
+  const closeWarn = () => setWarn(false);
+  const showWarn = (item) => {
+    setItemToDelete(item);
+    setWarn(true);
+  };
 
   const valueSetter = (current) => {
     setValues((prevState) => ({
@@ -128,6 +142,13 @@ const TableList = () => {
   const deleteItem = (item) => {
     actions.deleteOneItemFromList(item);
     setRows(actions.getDataListFromLocalStorage());
+    const clearedRelations = relations.getRelationListFromLocalStorage()
+      .filter((rel) => rel.prodId !== item.id);
+    relations.setRelationListInLocalStorage(clearedRelations);
+  };
+  const deleteProd = () => {
+    deleteItem(itemToDelete);
+    closeWarn();
   };
 
   const addItem = (item) => {
@@ -225,10 +246,11 @@ const TableList = () => {
         pgTitle="Products"
       >
         <div className="table-body">
-          <TableItself rows={rows} deleteFunc={deleteItem} editItem={forceOpenAddWindow} />
+          <TableItself rows={rows} deleteFunc={showWarn} editItem={forceOpenAddWindow} />
         </div>
       </Card>
       <AddEditModal
+        title="Add Product"
         values={values}
         warehouses={warehouses}
         open={openProductWindow}
@@ -239,6 +261,12 @@ const TableList = () => {
         applyFunc={addProductApply}
         setter={advancedSetter}
         modalPattern={dataPattern}
+      />
+      <WarningModal
+        open={warn}
+        handleClose={closeWarn}
+        message={WARNING_ON_DELETION_MESSAGE}
+        apply={deleteProd}
       />
     </>
   );
