@@ -178,12 +178,30 @@ const TableList = () => {
     else addItem(store);
   };
 
+  const checkNewValue = () => {
+    let isThereProblem = false;
+    listQuantities.forEach((item) => {
+      const used = quantitiesList
+        .filter((quant) => quant.prodId === item.prodId)
+        .reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
+      const product = productsList.find((prod) => prod.id === item.prodId);
+      if (+item?.quantity > (+product?.quantity - +used)) isThereProblem = true;
+    });
+    return isThereProblem;
+  };
+
   const addProductApply = () => {
-    if (values.name && values.address) {
+    const allNumberReal = checkNewValue();
+    const isThereNegativeNumbers = listQuantities.some((item) => item.quantity < 0);
+    if (values.name && values.address && !isThereNegativeNumbers && !allNumberReal) {
       processApply();
       closeWindow();
     } else if (!values.name || !values.address) {
       valueSetter({ error: 'Name of a store and address are required' });
+    } else if (isThereNegativeNumbers) {
+      valueSetter({ error: 'Distributed products must be 0 or more' });
+    } else if (allNumberReal) {
+      valueSetter({ error: 'Quantity of distributed products must be less than non-distributed' });
     }
   };
 
