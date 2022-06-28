@@ -1,7 +1,12 @@
 export default class Relations {
   constructor(key) {
     this.storageKey = key;
-    // this.#init();
+    this.#init();
+  }
+
+  #init() {
+    const check = this.getRelationListFromLocalStorage();
+    if (!check) this.setRelationListInLocalStorage([]);
   }
 
   getRelationListFromLocalStorage() {

@@ -4,16 +4,17 @@ import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
 import TableCell from '@mui/material/TableCell';
 
-import { PRODUCT_WAREHOUSE_QUANTITY } from '../../consts';
 
-import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
+import { PRODUCT_WAREHOUSE_QUANTITY } from '../../../consts';
 
 import Relations from '../../../TableRelations';
+
+import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
 
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
-const OneRow = ({ row, deleteFunc }) => {
+const OneRow = ({ row, deleteFunc, editItem }) => {
   const [showButtons, setShowButtons] = useState(false);
   const [quantity, setQuantity] = useState(0);
 
@@ -21,7 +22,7 @@ const OneRow = ({ row, deleteFunc }) => {
     const currentStore = relations.getRelationListFromLocalStorage().filter((item) => item.storeId === row.id);
     const usedQuantity = currentStore.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
     setQuantity(usedQuantity);
-  }, []);
+  }, [row.quantity]);
 
   return (
     <TableRow
@@ -34,14 +35,18 @@ const OneRow = ({ row, deleteFunc }) => {
       <TableCell component="th" scope="row">
         {row?.name ?? ''}
       </TableCell>
-      <TableCell align="right">{quantity ?? ''}</TableCell>
+      <TableCell align="right">{quantity}</TableCell>
       <TableCell align="right">{row?.address ?? ''}</TableCell>
       <TableCell align="right">{row?.width ?? ''}</TableCell>
       <TableCell align="right">{row?.height ?? ''}</TableCell>
       <TableCell align="right">{row?.length ?? ''}</TableCell>
       <TableCell className="button-group" align="right">
         <div className={`button-cell ${showButtons && 'shown'}`}>
-          <MDBBtn outline color="success">
+          <MDBBtn
+            onClick={() => editItem(true, row)}
+            outline
+            color="success"
+          >
             <MDBIcon size="2x" fas icon="edit" />
           </MDBBtn>
           <MDBBtn
