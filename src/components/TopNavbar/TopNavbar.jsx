@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   MDBCollapse,
   MDBContainer,
@@ -19,7 +19,7 @@ import './TopNavbar.scss';
 
 const CHOSEN_NAVIGATION_OPTION = 'CHOSEN_NAVIGATION_OPTION';
 
-const TopNavbar = ({ links }) => {
+const TopNavbar = memo(({ links }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -66,6 +66,6 @@ const TopNavbar = ({ links }) => {
       </MDBContainer>
     </MDBNavbar>
   );
-};
+});
 
 export default TopNavbar;

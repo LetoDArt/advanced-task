@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Card from '../../Card/Card';
@@ -60,17 +60,12 @@ const TableList = () => {
     },
   };
 
-  const valueSetter = (current) => {
+  const valueSetter = useCallback((current) => {
     setValues((prevState) => ({
-      name: current?.name ?? prevState.name,
-      width: current?.width ?? prevState.width,
-      address: current?.address ?? prevState.address,
-      height: current?.height ?? prevState.height,
-      length: current?.length ?? prevState.length,
-      quantity: current?.quantity ?? prevState.quantity,
-      error: current?.error ?? prevState.error,
+      ...prevState,
+      ...current,
     }));
-  };
+  }, []);
 
   const advancedSetter = (key, value) => {
     const obj = {};
@@ -78,7 +73,7 @@ const TableList = () => {
     valueSetter(obj);
   };
 
-  const createWarehouseRows = (editing, storeId) => {
+  const createWarehouseRows = useMemo(() => (editing, storeId) => {
     const newDistribution = [];
     const prods = JSON.parse(JSON.stringify(productsList));
     if (editing) {
@@ -98,12 +93,12 @@ const TableList = () => {
       item.quantity = '';
     });
     return prods;
-  };
+  }, [productsList, quantitiesList]);
 
-  const closeWindow = () => {
+  const closeWindow = useCallback(() => {
     setValues(initialValues);
     setOpenWarehouseWindow(false);
-  };
+  }, []);
   const forceOpenAddWindow = (editing, warehouse) => {
     const edit = typeof editing === 'boolean' && editing;
     setListQuantities([]);
@@ -178,34 +173,19 @@ const TableList = () => {
     else addItem(store);
   };
 
-  const checkNewValue = () => {
-    let isThereProblem = false;
-    listQuantities.forEach((item) => {
-      const used = quantitiesList
-        .filter((quant) => quant.prodId === item.prodId)
-        .reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
-      const product = productsList.find((prod) => prod.id === item.prodId);
-      if (+item?.quantity > (+product?.quantity - +used)) isThereProblem = true;
-    });
-    return isThereProblem;
-  };
-
   const addProductApply = () => {
-    const allNumberReal = checkNewValue();
     const isThereNegativeNumbers = listQuantities.some((item) => item.quantity < 0);
-    if (values.name && values.address && !isThereNegativeNumbers && !allNumberReal) {
+    if (values.name && values.address && !isThereNegativeNumbers) {
       processApply();
       closeWindow();
     } else if (!values.name || !values.address) {
       valueSetter({ error: 'Name of a store and address are required' });
     } else if (isThereNegativeNumbers) {
       valueSetter({ error: 'Distributed products must be 0 or more' });
-    } else if (allNumberReal) {
-      valueSetter({ error: 'Quantity of distributed products must be less than non-distributed' });
     }
   };
 
-  const getQuantity = (id, value) => {
+  const getQuantity = useCallback((id, value) => {
     const list = [...listQuantities];
     if (list.some((item) => item.prodId === id)) {
       list.forEach((item) => {
@@ -218,7 +198,7 @@ const TableList = () => {
       });
     }
     setListQuantities(list);
-  };
+  }, [listQuantities]);
 
   return (
     <>
