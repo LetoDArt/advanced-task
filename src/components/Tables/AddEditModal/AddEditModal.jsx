@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import ModalWindow from '../../common/ModalWindow/ModalWindow';
 import Distribution from './Distribution/Distribution';
@@ -7,7 +7,7 @@ import AllFields from './AllFields/AllFields';
 import './AddEditModal.scss';
 
 
-const AddEditModal = ({
+const AddEditModal = memo(({
   title,
   values,
   getQuantity,
@@ -36,6 +36,6 @@ const AddEditModal = ({
       {values.error && (<div className="warning-row">{values.error}</div>)}
     </div>
   </ModalWindow>
-);
+));
 
 export default AddEditModal;

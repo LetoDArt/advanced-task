@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { MDBBtn } from 'mdb-react-ui-kit';
 
 import ModalWindow from '../../common/ModalWindow/ModalWindow';
@@ -6,8 +6,11 @@ import ModalWindow from '../../common/ModalWindow/ModalWindow';
 import './WarningModal.scss';
 
 
-const WarningModal = ({
-  open, handleClose, message, apply,
+const WarningModal = memo(({
+  open,
+  handleClose,
+  message,
+  apply,
 }) => {
   const applyAction = () => {
     apply();
@@ -35,6 +38,6 @@ const WarningModal = ({
       </div>
     </ModalWindow>
   );
-};
+});
 
 export default WarningModal;

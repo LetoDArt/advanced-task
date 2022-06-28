@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Card from '../../Card/Card';
@@ -60,7 +60,7 @@ const TableList = () => {
       needed: true, label: 'Name', setterKey: 'name', inputType: 'text', value: values.name,
     },
     second: {
-      needed: true, label: 'Id of a product', setterKey: 'num', inputType: 'text', value: values.num,
+      needed: true, label: 'Number of a product', setterKey: 'num', inputType: 'text', value: values.num,
     },
     third: {
       needed: true, label: 'Width, m', setterKey: 'width', inputType: 'number', value: values.width,
@@ -82,26 +82,18 @@ const TableList = () => {
     },
   };
 
-  const closeWarn = () => setWarn(false);
-  const showWarn = (item) => {
+  const closeWarn = useCallback(() => setWarn(false), []);
+  const showWarn = useCallback((item) => {
     setItemToDelete(item);
     setWarn(true);
-  };
+  }, []);
 
-  const valueSetter = (current) => {
+  const valueSetter = useCallback((current) => {
     setValues((prevState) => ({
-      name: current?.name ?? prevState.name,
-      num: current?.num ?? prevState.num,
-      weight: current?.weight ?? prevState.weight,
-      width: current?.width ?? prevState.width,
-      height: current?.height ?? prevState.height,
-      length: current?.length ?? prevState.length,
-      quantity: current?.quantity ?? prevState.quantity,
-      npnUsedQuantity: current?.npnUsedQuantity ?? prevState.npnUsedQuantity,
-      color: current?.color ?? prevState.color,
-      error: current?.error ?? prevState.error,
+      ...prevState,
+      ...current,
     }));
-  };
+  }, []);
 
   const advancedSetter = (key, value) => {
     const obj = {};
@@ -109,7 +101,7 @@ const TableList = () => {
     valueSetter(obj);
   };
 
-  const createWarehouseRows = (editing, prodId) => {
+  const createWarehouseRows = useMemo(() => (editing, prodId) => {
     const newDistribution = [];
     const stores = JSON.parse(JSON.stringify(warehouseList));
     if (editing) {
@@ -127,12 +119,13 @@ const TableList = () => {
       item.quantity = '';
     });
     return stores;
-  };
+  }, [warehouseList, quantitiesList]);
 
-  const closeWindow = () => {
+  const closeWindow = useCallback(() => {
     setValues(initialValues);
     setOpenProductWindow(false);
-  };
+  }, []);
+
   const forceOpenAddWindow = (editing = false, product) => {
     const edit = typeof editing === 'boolean' && editing;
     setListQuantities([]);
@@ -156,10 +149,10 @@ const TableList = () => {
     relations.setRelationListInLocalStorage(clearedRelations);
     dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
   };
-  const deleteProd = () => {
+  const deleteProd = useCallback(() => {
     deleteItem(itemToDelete);
     closeWarn();
-  };
+  }, [itemToDelete]);
 
   const addItem = (item) => {
     actions.addOptionToDataList(item);
@@ -231,7 +224,7 @@ const TableList = () => {
   };
 
 
-  const getQuantity = (id, value) => {
+  const getQuantity = useCallback((id, value) => {
     const list = [...listQuantities];
     if (list.some((item) => item.storeId === id)) {
       list.forEach((item) => {
@@ -244,7 +237,7 @@ const TableList = () => {
       });
     }
     setListQuantities(list);
-  };
+  }, [listQuantities]);
 
 
   return (

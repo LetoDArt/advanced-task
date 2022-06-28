@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import DistributionRow from './DistributionRow/DistributionRow';
 
 
-const Distribution = ({ warehouses, getQuantity, warehouseDist }) => (
+const Distribution = memo(({ warehouses, getQuantity, warehouseDist }) => (
   <div className="warehouse-distribution">
     <div className={`warehouse-distribute-row header-row ${warehouseDist && 'product-list'}`}>
       <div>{ warehouseDist ? 'Products' : 'Warehouses'}</div>
@@ -29,6 +29,6 @@ const Distribution = ({ warehouses, getQuantity, warehouseDist }) => (
 
     </div>
   </div>
-);
+));
 
 export default Distribution;
