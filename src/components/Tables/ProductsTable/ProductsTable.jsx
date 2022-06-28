@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Card from '../../Card/Card';
 import TableItself from './TableItself/TableItself';
 import AddEditModal from '../AddEditModal/AddEditModal';
 import WarningModal from '../WarningModal/WarningModal';
 
-import '../TableStyles/TableStyles.scss';
+import { getProductList, getQuantitiesList, getWarehouseList } from '../../../redux/tables/selectors';
 
 import {
   PRODUCT_LIST_KEY,
   PRODUCT_WAREHOUSE_QUANTITY,
-  WAREHOUSE_LIST_KEY,
   WARNING_ON_DELETION_MESSAGE,
 } from '../consts';
+
+import { tableActions } from '../../../redux/tables/actions';
 
 import Actions from '../tableActions';
 import Relations from '../TableRelations';
 
+import '../TableStyles/TableStyles.scss';
+
 
 const actions = new Actions(PRODUCT_LIST_KEY);
-const actions2 = new Actions(WAREHOUSE_LIST_KEY);
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
 
@@ -37,7 +40,8 @@ const initialValues = {
 };
 
 const TableList = () => {
-  const [rows, setRows] = useState(null);
+  const dispatch = useDispatch();
+
   const [openProductWindow, setOpenProductWindow] = useState(false);
   const [productId, setProductId] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -46,6 +50,10 @@ const TableList = () => {
   const [values, setValues] = useState(initialValues);
   const [warn, setWarn] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(true);
+
+  const productList = useSelector(getProductList);
+  const warehouseList = useSelector(getWarehouseList);
+  const quantitiesList = useSelector(getQuantitiesList);
 
   const dataPattern = {
     first: {
@@ -103,10 +111,9 @@ const TableList = () => {
 
   const createWarehouseRows = (editing, prodId) => {
     const newDistribution = [];
-    const stores = actions2.getDataListFromLocalStorage();
+    const stores = JSON.parse(JSON.stringify(warehouseList));
     if (editing) {
-      const relate = relations
-        .getRelationListFromLocalStorage().filter((item) => item.prodId === prodId);
+      const relate = [...quantitiesList].filter((item) => item.prodId === prodId);
       stores.forEach((store) => {
         const relationOfStore = relate.find((rel) => rel.storeId === store.id);
         newDistribution.push({
@@ -114,9 +121,11 @@ const TableList = () => {
           quantity: relationOfStore ? relationOfStore.quantity : '',
         });
       });
-
       return newDistribution;
     }
+    stores.forEach((item) => {
+      item.quantity = '';
+    });
     return stores;
   };
 
@@ -141,10 +150,11 @@ const TableList = () => {
 
   const deleteItem = (item) => {
     actions.deleteOneItemFromList(item);
-    setRows(actions.getDataListFromLocalStorage());
-    const clearedRelations = relations.getRelationListFromLocalStorage()
+    dispatch(tableActions.setProductList(actions.getDataListFromLocalStorage()));
+    const clearedRelations = [...quantitiesList]
       .filter((rel) => rel.prodId !== item.id);
     relations.setRelationListInLocalStorage(clearedRelations);
+    dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
   };
   const deleteProd = () => {
     deleteItem(itemToDelete);
@@ -153,17 +163,13 @@ const TableList = () => {
 
   const addItem = (item) => {
     actions.addOptionToDataList(item);
-    setRows(actions.getDataListFromLocalStorage());
+    dispatch(tableActions.setProductList(actions.getDataListFromLocalStorage()));
   };
 
   const editItem = (item) => {
     actions.editItemOfList(item);
-    setRows(actions.getDataListFromLocalStorage());
+    dispatch(tableActions.setProductList(actions.getDataListFromLocalStorage()));
   };
-
-  useEffect(() => {
-    setRows(actions.getDataListFromLocalStorage());
-  }, []);
 
   const processApply = (usedQuantity) => {
     const product = {
@@ -178,7 +184,7 @@ const TableList = () => {
       quantity: values.quantity,
       nonUsedQuantity: +values.quantity - +usedQuantity,
     };
-    const existing = [...relations.getRelationListFromLocalStorage()];
+    const existing = [...quantitiesList];
     listQuantities.forEach((item) => {
       item.prodId = product.id;
     });
@@ -202,6 +208,7 @@ const TableList = () => {
         relations.setRelationListInLocalStorage([...existing, ...listQuantities]);
       } else relations.setRelationListInLocalStorage([...listQuantities]);
     }
+    dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
     if (isEditing) editItem(product);
     else addItem(product);
   };
@@ -246,7 +253,7 @@ const TableList = () => {
         pgTitle="Products"
       >
         <div className="table-body">
-          <TableItself rows={rows} deleteFunc={showWarn} editItem={forceOpenAddWindow} />
+          <TableItself rows={productList} deleteFunc={showWarn} editItem={forceOpenAddWindow} />
         </div>
       </Card>
       <AddEditModal

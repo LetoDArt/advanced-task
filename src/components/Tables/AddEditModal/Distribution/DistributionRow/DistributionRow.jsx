@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { TextField } from '@mui/material';
 
+import { getProductList, getQuantitiesList } from '../../../../../redux/tables/selectors';
 
-import { PRODUCT_LIST_KEY, PRODUCT_WAREHOUSE_QUANTITY } from '../../../consts';
-
-import Relations from '../../../TableRelations';
-import Actions from '../../../tableActions';
-
-
-const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
-const actions = new Actions(PRODUCT_LIST_KEY);
 
 const DistributionRow = ({
   id,
@@ -21,11 +15,14 @@ const DistributionRow = ({
   const [quant, setQuant] = useState(quantity);
   const [left, setLeft] = useState('');
 
+  const quantitiesList = useSelector(getQuantitiesList);
+  const productList = useSelector(getProductList);
+
   useEffect(() => {
-    const used = relations.getRelationListFromLocalStorage()
+    const used = [...quantitiesList]
       .filter((item) => item.prodId === id)
       .reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
-    const all = actions.getDataListFromLocalStorage().find((item) => item.id === id);
+    const all = [...productList].find((item) => item.id === id);
     setLeft((+all?.quantity) - (+used));
   }, []);
 
