@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { TextField } from '@mui/material';
 
 import { getProductList, getQuantitiesList } from '../../../../../redux/tables/selectors';
 
 
-const DistributionRow = ({
+const DistributionRow = memo(({
   id,
   name,
   quantity,
@@ -55,6 +55,6 @@ const DistributionRow = ({
       />
     </div>
   );
-};
+});
 
 export default DistributionRow;

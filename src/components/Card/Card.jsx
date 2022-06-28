@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import { MDBBtn } from 'mdb-react-ui-kit';
 
 import './Card.scss';
 
 
-const Card = ({
+const Card = memo(({
   pgTitle,
   btnTitle,
   btnFunction,
@@ -21,6 +21,6 @@ const Card = ({
     </div>
     {children}
   </div>
-);
+));
 
 export default Card;

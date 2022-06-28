@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { TextField } from '@mui/material';
 
 
-const AllFields = ({ modalPattern, setter }) => {
+const AllFields = memo(({ modalPattern, setter }) => {
   const {
     first, second, third, fourth, fifth, sixth, seventh, eighth,
   } = modalPattern;
@@ -99,6 +99,6 @@ const AllFields = ({ modalPattern, setter }) => {
       </div>
     </div>
   );
-};
+});
 
 export default AllFields;

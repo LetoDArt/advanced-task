@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
@@ -13,7 +13,7 @@ import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
-const OneRow = ({ row, deleteFunc, editItem }) => {
+const OneRow = memo(({ row, deleteFunc, editItem }) => {
   const [showButtons, setShowButtons] = useState(false);
   const [nonUsedQuantity, setNonUsedQuantity] = useState(0);
 
@@ -64,6 +64,6 @@ const OneRow = ({ row, deleteFunc, editItem }) => {
 
     </TableRow>
   );
-};
+});
 
 export default OneRow;
