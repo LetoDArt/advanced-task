@@ -214,8 +214,9 @@ const TableList = () => {
   };
 
   const addProductApply = () => {
+    const isThereNegativeNumbers = listQuantities.some((item) => item.quantity < 0);
     const usedQuantity = listQuantities.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
-    if (values.name && values.num && values.quantity && (+values.quantity >= usedQuantity)) {
+    if (values.name && values.num && values.quantity && (+values.quantity >= usedQuantity) && !isThereNegativeNumbers) {
       processApply(usedQuantity);
       closeWindow();
     } else if (!values.name || !values.num) {
@@ -224,6 +225,8 @@ const TableList = () => {
       valueSetter({ error: 'Quantity of all product items must be specified' });
     } else if (values.quantity < usedQuantity) {
       valueSetter({ error: 'Quantity of all products must be more than quantity of distributed items' });
+    } else if (isThereNegativeNumbers) {
+      valueSetter({ error: 'Distributed products must be 0 or more' });
     }
   };
 
