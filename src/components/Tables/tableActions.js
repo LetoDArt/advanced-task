@@ -1,6 +1,12 @@
 export default class Actions {
   constructor(key) {
     this.storageKey = key;
+    this.#init();
+  }
+
+  #init() {
+    const check = this.getDataListFromLocalStorage();
+    if (!check) this.setDataListInLocalStorage([]);
   }
 
   setDataListInLocalStorage(data) {

@@ -4,9 +4,11 @@ import { MDBBtn, MDBIcon } from 'mdb-react-ui-kit';
 
 import TableCell from '@mui/material/TableCell';
 
-import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 import Relations from '../../../TableRelations';
-import { PRODUCT_WAREHOUSE_QUANTITY } from '../../consts';
+
+import { PRODUCT_WAREHOUSE_QUANTITY } from '../../../consts';
+
+import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
 
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
@@ -19,7 +21,7 @@ const OneRow = ({ row, deleteFunc, editItem }) => {
     const currentStore = relations.getRelationListFromLocalStorage().filter((item) => item.prodId === row.id);
     const used = currentStore.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
     setNonUsedQuantity(row?.quantity ? row.quantity - used : 0);
-  }, []);
+  }, [row.nonUsedQuantity]);
 
   return (
     <TableRow
