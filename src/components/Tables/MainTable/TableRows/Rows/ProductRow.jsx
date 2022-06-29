@@ -13,7 +13,7 @@ import '../../../TableStyles/TableRows/OneRow/OneRow.scss';
 
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
-const OneRow = memo(({ row, deleteFunc, editItem }) => {
+const ProductRow = memo(({ row, deleteFunc, editItem }) => {
   const [showButtons, setShowButtons] = useState(false);
   const [nonUsedQuantity, setNonUsedQuantity] = useState(0);
 
@@ -31,9 +31,7 @@ const OneRow = memo(({ row, deleteFunc, editItem }) => {
       className="table-row"
       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
     >
-      <TableCell component="th" scope="row">
-        {row?.name ?? ''}
-      </TableCell>
+      <TableCell component="th" scope="row">{row?.name ?? ''}</TableCell>
       <TableCell align="right">{row?.num ?? ''}</TableCell>
       <TableCell align="right">{row?.quantity ?? ''}</TableCell>
       <TableCell align="right">{nonUsedQuantity}</TableCell>
@@ -59,11 +57,9 @@ const OneRow = memo(({ row, deleteFunc, editItem }) => {
             <MDBIcon size="2x" fas icon="trash-alt" />
           </MDBBtn>
         </div>
-
       </TableCell>
-
     </TableRow>
   );
 });
 
-export default OneRow;
+export default ProductRow;

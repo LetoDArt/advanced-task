@@ -9,11 +9,17 @@ import TableRows from '../TableRows/TableRows';
 import '../../TableStyles/TableItself/TableItself.scss';
 
 
-const TableItself = ({ rows = [], deleteFunc, editItem }) => (
+const TableItself = ({
+  tableId,
+  rows,
+  deleteFunc,
+  editItem,
+  header,
+}) => (
   <TableContainer className="table-itself-container" component={Paper}>
     <Table stickyHeader sx={{ minWidth: 800 }} aria-label="simple table">
-      <TableHeader />
-      <TableRows rows={rows} deleteFunc={deleteFunc} editItem={editItem} />
+      <TableHeader header={header} />
+      <TableRows tableId={tableId} rows={rows} deleteFunc={deleteFunc} editItem={editItem} />
     </Table>
   </TableContainer>
 );
