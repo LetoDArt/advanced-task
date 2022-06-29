@@ -1,5 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { useProductDataPattern } from '../hooks/useTableDataPattern';
+import { useGetQuantity } from '../hooks/useGetQuantity';
+import { useAddItem, useDeleteItem, useEditItem } from '../hooks/useActions';
+import { useCreateDistributionRows } from '../hooks/useCreateDistributionRows';
+import { useAdvancedValueSetter } from '../hooks/useAdvancedValueSetter';
+import { useProductErrorChecker } from '../hooks/useErrorChecker';
+import { useQuantityProcessor } from '../hooks/useQuantityProcessor';
 
 import Card from '../../Card/Card';
 import TableItself from './TableItself/TableItself';
@@ -9,7 +17,9 @@ import WarningModal from '../WarningModal/WarningModal';
 import { getProductList, getQuantitiesList, getWarehouseList } from '../../../redux/tables/selectors';
 
 import {
+  INITIAL_VALUES_OF_PRODUCT_STATE,
   PRODUCT_LIST_KEY,
+  PRODUCT_TABLE_ID,
   PRODUCT_WAREHOUSE_QUANTITY,
   WARNING_ON_DELETION_MESSAGE,
 } from '../consts';
@@ -25,20 +35,6 @@ import '../TableStyles/TableStyles.scss';
 const actions = new Actions(PRODUCT_LIST_KEY);
 const relations = new Relations(PRODUCT_WAREHOUSE_QUANTITY);
 
-
-const initialValues = {
-  name: '',
-  num: '',
-  weight: '',
-  width: '',
-  height: '',
-  length: '',
-  quantity: '',
-  color: '',
-  npnUsedQuantity: '',
-  error: '',
-};
-
 const TableList = () => {
   const dispatch = useDispatch();
 
@@ -47,7 +43,7 @@ const TableList = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [listQuantities, setListQuantities] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
-  const [values, setValues] = useState(initialValues);
+  const [values, setValues] = useState(INITIAL_VALUES_OF_PRODUCT_STATE);
   const [warn, setWarn] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(true);
 
@@ -55,190 +51,71 @@ const TableList = () => {
   const warehouseList = useSelector(getWarehouseList);
   const quantitiesList = useSelector(getQuantitiesList);
 
-  const dataPattern = {
-    first: {
-      needed: true, label: 'Name', setterKey: 'name', inputType: 'text', value: values.name,
-    },
-    second: {
-      needed: true, label: 'Number of a product', setterKey: 'num', inputType: 'text', value: values.num,
-    },
-    third: {
-      needed: true, label: 'Width, m', setterKey: 'width', inputType: 'number', value: values.width,
-    },
-    fourth: {
-      needed: true, label: 'Length, m', setterKey: 'length', inputType: 'number', value: values.length,
-    },
-    fifth: {
-      needed: true, label: 'Height, m', setterKey: 'height', inputType: 'number', value: values.height,
-    },
-    sixth: {
-      needed: true, label: 'Weight, kg', setterKey: 'weight', inputType: 'number', value: values.weight,
-    },
-    seventh: {
-      needed: true, label: 'Color', setterKey: 'color', inputType: 'text', value: values.color,
-    },
-    eighth: {
-      needed: true, label: 'Quantity', setterKey: 'quantity', inputType: 'number', value: values.quantity,
-    },
-  };
+  const dataPattern = useProductDataPattern(values);
+  const getQuantity = useGetQuantity(PRODUCT_TABLE_ID, listQuantities, setListQuantities);
+  const addItem = useAddItem(actions, tableActions.setProductList);
+  const editItem = useEditItem(actions, tableActions.setProductList);
+  const createWarehouseRows = useCreateDistributionRows(PRODUCT_TABLE_ID, warehouseList, quantitiesList);
+  const advancedSetter = useAdvancedValueSetter(setValues);
+  const checkError = useProductErrorChecker(advancedSetter);
+  const setQuantitiesToMemory = useQuantityProcessor(isEditing, listQuantities);
+  const deleteItem = useDeleteItem(
+    PRODUCT_TABLE_ID,
+    actions,
+    tableActions.setProductList,
+    quantitiesList,
+    relations,
+    tableActions.setProductWarehouseQuantities,
+  );
 
   const closeWarn = useCallback(() => setWarn(false), []);
+  const closeWindow = useCallback(() => setOpenProductWindow(false), []);
+
   const showWarn = useCallback((item) => {
     setItemToDelete(item);
     setWarn(true);
   }, []);
-
-  const valueSetter = useCallback((current) => {
-    setValues((prevState) => ({
-      ...prevState,
-      ...current,
-    }));
-  }, []);
-
-  const advancedSetter = (key, value) => {
-    const obj = {};
-    obj[key] = value;
-    valueSetter(obj);
-  };
-
-  const createWarehouseRows = useMemo(() => (editing, prodId) => {
-    const newDistribution = [];
-    const stores = JSON.parse(JSON.stringify(warehouseList));
-    if (editing) {
-      const relate = [...quantitiesList].filter((item) => item.prodId === prodId);
-      stores.forEach((store) => {
-        const relationOfStore = relate.find((rel) => rel.storeId === store.id);
-        newDistribution.push({
-          ...store,
-          quantity: relationOfStore ? relationOfStore.quantity : '',
-        });
-      });
-      return newDistribution;
-    }
-    stores.forEach((item) => {
-      item.quantity = '';
-    });
-    return stores;
-  }, [warehouseList, quantitiesList]);
-
-  const closeWindow = useCallback(() => {
-    setValues(initialValues);
-    setOpenProductWindow(false);
-  }, []);
-
-  const forceOpenAddWindow = (editing = false, product) => {
+  const forceOpenAddWindow = useCallback((editing = false, product) => {
     const edit = typeof editing === 'boolean' && editing;
     setListQuantities([]);
     setWarehouses(createWarehouseRows(edit, product?.id));
-    if (edit) {
-      setIsEditing(edit);
-      setProductId(product?.id);
-      valueSetter({ ...product });
-    } else {
-      setIsEditing(false);
-      setProductId('');
-    }
+    setIsEditing(edit ?? false);
+    setProductId(edit ? product?.id : '');
+    setValues(edit ? { ...product } : INITIAL_VALUES_OF_PRODUCT_STATE);
     setOpenProductWindow(true);
-  };
+  }, [createWarehouseRows]);
 
-  const deleteItem = (item) => {
-    actions.deleteOneItemFromList(item);
-    dispatch(tableActions.setProductList(actions.getDataListFromLocalStorage()));
-    const clearedRelations = [...quantitiesList]
-      .filter((rel) => rel.prodId !== item.id);
-    relations.setRelationListInLocalStorage(clearedRelations);
-    dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
-  };
   const deleteProd = useCallback(() => {
     deleteItem(itemToDelete);
     closeWarn();
   }, [itemToDelete]);
 
-  const addItem = (item) => {
-    actions.addOptionToDataList(item);
-    dispatch(tableActions.setProductList(actions.getDataListFromLocalStorage()));
-  };
-
-  const editItem = (item) => {
-    actions.editItemOfList(item);
-    dispatch(tableActions.setProductList(actions.getDataListFromLocalStorage()));
-  };
 
   const processApply = (usedQuantity) => {
     const product = {
       id: isEditing ? productId : `row ${Date.now()}`,
-      name: values.name,
-      num: values.num,
-      weight: values.weight,
-      width: values.width,
-      height: values.height,
-      length: values.length,
-      color: values.color,
-      quantity: values.quantity,
+      ...values,
       nonUsedQuantity: +values.quantity - +usedQuantity,
+      error: '',
     };
     const existing = [...quantitiesList];
-    listQuantities.forEach((item) => {
-      item.prodId = product.id;
-    });
+    listQuantities.forEach((item) => { item.prodId = product.id; });
 
-    if (!isEditing) {
-      relations.setRelationListInLocalStorage([...existing, ...listQuantities]);
-    } else if (listQuantities.length) {
-      if (existing.length) {
-        listQuantities.forEach((newOnes) => {
-          const one = existing
-            .find((exItem) => exItem.prodId === product.id && exItem.storeId === newOnes.storeId);
-          const ind = existing
-            .findIndex((exItem) => exItem.prodId === product.id && exItem.storeId === newOnes.storeId);
-          if (one) existing.splice(ind, 1);
-        });
+    const result = setQuantitiesToMemory(existing, product);
 
-        product.nonUsedQuantity = +values.quantity - [...existing, ...listQuantities]
-          .filter((exItem) => exItem.prodId === product.id)
-          .reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
-
-        relations.setRelationListInLocalStorage([...existing, ...listQuantities]);
-      } else relations.setRelationListInLocalStorage([...listQuantities]);
-    }
-    dispatch(tableActions.setProductWarehouseQuantities(relations.getRelationListFromLocalStorage()));
+    relations.setRelationListInLocalStorage(result);
+    dispatch(tableActions.setProductWarehouseQuantities(result));
     if (isEditing) editItem(product);
     else addItem(product);
   };
 
   const addProductApply = () => {
-    const isThereNegativeNumbers = listQuantities.some((item) => item.quantity < 0);
     const usedQuantity = listQuantities.reduce((accumulator, cur) => accumulator + (+cur.quantity), 0);
-    if (values.name && values.num && values.quantity && (+values.quantity >= usedQuantity) && !isThereNegativeNumbers) {
+    if (!checkError(values, listQuantities, usedQuantity)) {
       processApply(usedQuantity);
       closeWindow();
-    } else if (!values.name || !values.num) {
-      valueSetter({ error: 'Name of a product and individual number are required' });
-    } else if (!values.quantity) {
-      valueSetter({ error: 'Quantity of all product items must be specified' });
-    } else if (values.quantity < usedQuantity) {
-      valueSetter({ error: 'Quantity of all products must be more than quantity of distributed items' });
-    } else if (isThereNegativeNumbers) {
-      valueSetter({ error: 'Distributed products must be 0 or more' });
     }
   };
-
-
-  const getQuantity = useCallback((id, value) => {
-    const list = [...listQuantities];
-    if (list.some((item) => item.storeId === id)) {
-      list.forEach((item) => {
-        if (item.storeId === id) item.quantity = value;
-      });
-    } else {
-      list.push({
-        storeId: id,
-        quantity: value,
-      });
-    }
-    setListQuantities(list);
-  }, [listQuantities]);
-
 
   return (
     <>
@@ -255,7 +132,7 @@ const TableList = () => {
       <AddEditModal
         title="Add Product"
         values={values}
-        warehouses={warehouses}
+        distribution={warehouses}
         open={openProductWindow}
         getQuantity={getQuantity}
         handleClose={closeWindow}

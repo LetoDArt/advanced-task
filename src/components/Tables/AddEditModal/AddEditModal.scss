@@ -8,17 +8,14 @@
 
   .product-addition {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
     grid-row-gap: 12px;
+    grid-column-gap: 24px;
 
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 24px;
-
-      @media screen and (max-width: 610px){
-        grid-column-gap: 8px;
-      }
+    @media screen and (max-width: 610px) {
+      grid-row-gap: 8px;
+      grid-column-gap: 8px;
     }
   }
 

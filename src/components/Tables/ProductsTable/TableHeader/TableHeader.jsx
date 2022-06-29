@@ -15,8 +15,8 @@ const TableHeader = () => (
       <TableCell align="right">Quantity</TableCell>
       <TableCell align="right">Non-distributed quan</TableCell>
       <TableCell align="right">Weight, kg</TableCell>
-      <TableCell align="right">Width, m</TableCell>
       <TableCell align="right">Height, m</TableCell>
+      <TableCell align="right">Width, m</TableCell>
       <TableCell align="right">Length, m</TableCell>
       <TableCell align="right">Color</TableCell>
       <TableCell align="center">Actions</TableCell>
