@@ -11,7 +11,7 @@ const AddEditModal = memo(({
   title,
   values,
   getQuantity,
-  warehouses,
+  distribution,
   handleClose,
   open,
   applyFunc,
@@ -29,7 +29,7 @@ const AddEditModal = memo(({
     <div className="product-addition-container">
       <AllFields modalPattern={modalPattern} setter={setter} />
       <Distribution
-        warehouses={warehouses}
+        distribute={distribution}
         getQuantity={getQuantity}
         warehouseDist={warehouseDist}
       />

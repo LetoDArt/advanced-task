@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import DistributionRow from './DistributionRow/DistributionRow';
 
 
-const Distribution = memo(({ warehouses, getQuantity, warehouseDist }) => (
+const Distribution = memo(({ distribute, getQuantity, warehouseDist }) => (
   <div className="warehouse-distribution">
     <div className={`warehouse-distribute-row header-row ${warehouseDist && 'product-list'}`}>
       <div>{ warehouseDist ? 'Products' : 'Warehouses'}</div>
@@ -15,7 +15,7 @@ const Distribution = memo(({ warehouses, getQuantity, warehouseDist }) => (
       <div>Quantity</div>
     </div>
     <div className={`warehouse-distribution-list ${warehouseDist && 'product-list'}`}>
-      {warehouses && warehouses.map((row) => (
+      {distribute && distribute.map((row) => (
         <DistributionRow
           key={row.id}
           id={row.id}
